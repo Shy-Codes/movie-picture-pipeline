@@ -92,20 +92,4 @@ jobs:
       - name: Push Docker Image
         run: docker push ${{ steps.image.outputs.image }}
 
-  deploy:
-    runs-on: ubuntu-latest
-
-    needs:
-      - build_and_deploy
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: azure/setup-kubectl@v4
-
-      - uses: imranismail/setup-kustomize@v2
-
-      - working-directory: starter/backend/k8s
-        run: |
-          kustomize edit set image backend=${{ needs.build_and_deploy.outputs.image }}
-          kustomize build | kubectl apply -f -
+ 
