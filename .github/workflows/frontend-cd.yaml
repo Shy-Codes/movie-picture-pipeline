@@ -82,6 +82,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Verify AWS Identity
+        run: aws sts get-caller-identity
+
       - uses: aws-actions/amazon-ecr-login@v2
 
       - id: image
@@ -110,8 +113,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-        - name: Verify AWS Identity
-          run: aws sts get-caller-identity
+
+      - name: Verify AWS Identity
+        run: aws sts get-caller-identity
+
       - uses: azure/setup-kubectl@v4
 
       - uses: imranismail/setup-kustomize@v2
