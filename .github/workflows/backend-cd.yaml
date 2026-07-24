@@ -47,7 +47,7 @@ jobs:
 
       - run: pipenv run test
 
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
 
     needs:
@@ -96,30 +96,14 @@ jobs:
     runs-on: ubuntu-latest
 
     needs:
-      - build
+      - build_and_deploy
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Verify AWS Identity
-        run: aws sts get-caller-identity
-
       - uses: azure/setup-kubectl@v4
-
-      - uses: imranismail/setup-kustomize@v2
-
-      - run: |
-          aws eks update-kubeconfig \
-            --name ${{ secrets.EKS_CLUSTER_NAME }} \
-            --region ${{ secrets.AWS_REGION }}
 
       - working-directory: starter/backend/k8s
         run: |
-          kustomize edit set image backend=${{ needs.build.outputs.image }}
-          kustomize build | kubectl apply -f -
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
