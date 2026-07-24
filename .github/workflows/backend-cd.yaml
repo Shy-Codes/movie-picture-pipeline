@@ -103,7 +103,9 @@ jobs:
 
       - uses: azure/setup-kubectl@v4
 
+      - uses: imranismail/setup-kustomize@v2
+
       - working-directory: starter/backend/k8s
         run: |
-          kubectl apply -f deployment.yaml
-          kubectl apply -f service.yaml
+          kustomize edit set image backend=${{ needs.build_and_deploy.outputs.image }}
+          kustomize build | kubectl apply -f -
